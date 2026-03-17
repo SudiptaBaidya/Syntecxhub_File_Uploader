@@ -1,12 +1,14 @@
 const multer = require('multer');
 const { GridFsStorage } = require('multer-gridfs-storage');
-const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 
-dotenv.config();
+// Wait for the mongoose connection to be established by server.js
+const dbPromise = mongoose.connection.asPromise().then(conn => {
+  return conn.db; 
+});
 
 const storage = new GridFsStorage({
-  url: process.env.MONGO_URI,
-  options: { useNewUrlParser: true, useUnifiedTopology: true },
+  db: dbPromise,
   file: (req, file) => {
     return new Promise((resolve, reject) => {
       const filename = `${Date.now()}-${file.originalname}`;
