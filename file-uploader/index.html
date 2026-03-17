@@ -3,50 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Uploader API Tester</title>
+    <title>EaseDocs | File Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #f9fafb; color: #111827; }
-        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-        h1, h2 { color: #1f2937; margin-top: 0; }
-        .form-group { margin-bottom: 1rem; }
-        input[type="file"] { display: block; margin-bottom: 1rem; }
-        button { background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 500; }
-        button:hover { background: #2563eb; }
-        button.delete-btn { background: #ef4444; padding: 0.25rem 0.5rem; font-size: 0.875rem; }
-        button.delete-btn:hover { background: #dc2626; }
-        .file-list { list-style: none; padding: 0; }
-        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 4px; margin-bottom: 0.5rem; }
-        .file-info { display: flex; flex-direction: column; }
-        .file-name { font-weight: 500; }
-        .file-meta { font-size: 0.875rem; color: #6b7280; }
-        .status { margin-top: 1rem; padding: 1rem; border-radius: 4px; display: none; }
-        .success { background: #dcfce7; color: #166534; display: block; }
-        .error { background: #fee2e2; color: #991b1b; display: block; }
-        a.download-link { color: #3b82f6; text-decoration: none; margin-right: 1rem; }
-        a.download-link:hover { text-decoration: underline; }
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary: #10B981;
+            --secondary-hover: #059669;
+            --danger: #EF4444;
+            --danger-hover: #DC2626;
+            --bg-color: #F3F4F6;
+            --surface: #FFFFFF;
+            --text-main: #111827;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 350px 1fr;
+                align-items: start;
+            }
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #4F46E5, #8B5CF6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1F2937;
+        }
+
+        /* Upload Area Styling */
+        .upload-area {
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: #EEF2FF;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-area:hover {
+            background: #E0E7FF;
+            border-color: var(--primary-hover);
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .upload-hint {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .header-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-action h2 { margin-bottom: 0; }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.875rem;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #D1D5DB;
+        }
+
+        /* File List */
+        .file-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .file-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        @media (min-width: 640px) {
+            .file-item {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0;
+            }
+        }
+
+        .file-item:hover {
+            border-color: #D1D5DB;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transform: scale(1.01);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        .file-icon {
+            background: #F3F4F6;
+            padding: 0.75rem;
+            border-radius: 8px;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .file-details {
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .file-meta span.dot {
+            width: 3px;
+            height: 3px;
+            background: #D1D5DB;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-link {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            background: #F3F4F6;
+            color: var(--primary);
+            text-align: center;
+            flex: 1;
+        }
+
+        @media (min-width: 640px) {
+            .action-link { flex: none; }
+        }
+
+        .action-link:hover { background: #E5E7EB; }
+
+        .action-delete {
+            background: #FEF2F2;
+            color: var(--danger);
+        }
+
+        .action-delete:hover { background: #FEE2E2; }
+
+        /* Status Messages */
+        .status {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status.success { background: #DCFCE7; color: #166534; border-left: 4px solid #16A34A; }
+        .status.error { background: #FEE2E2; color: #991B1B; border-left: 4px solid #DC2626; }
+        .status.info { color: var(--text-light); text-align: center; display: block; padding: 2rem 0; font-style: italic; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <h1>File Uploader API Tester</h1>
+    <div class="container">
+        <div class="header">
+            <h1>EaseDocs</h1>
+            <p>Secure, rapid file sharing & storage</p>
+        </div>
 
-    <div class="card">
-        <h2>Upload a File</h2>
-        <form id="uploadForm">
-            <div class="form-group">
-                <input type="file" id="fileInput" name="file" required>
+        <!-- Upload Section -->
+        <div class="card">
+            <h2>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Upload File
+            </h2>
+            <form id="uploadForm">
+                <div class="upload-area" id="dropZone">
+                    <input type="file" id="fileInput" name="file" required>
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text" id="fileLabel">Click to browse or drag file here</div>
+                    <div class="upload-hint">Supports all file types up to Vercel limits</div>
+                </div>
+                <button type="submit" id="uploadBtn" class="btn btn-primary">
+                    Upload to Cloud
+                </button>
+            </form>
+            <div id="uploadStatus" class="status"></div>
+        </div>
+
+        <!-- Files Section -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="header-action">
+                <h2>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Cloud Storage
+                </h2>
+                <button onclick="fetchFiles()" class="btn btn-secondary btn-sm">↻ Refresh</button>
             </div>
-            <button type="submit" id="uploadBtn">Upload File</button>
-        </form>
-        <div id="uploadStatus" class="status"></div>
-    </div>
-
-    <div class="card">
-        <h2>Uploaded Files</h2>
-        <button onclick="fetchFiles()" style="margin-bottom: 1rem; background: #10b981;">Refresh List</button>
-        <ul id="fileList" class="file-list">
-            <!-- Files will be dynamically inserted here -->
-        </ul>
-        <div id="listStatus" class="status"></div>
+            <ul id="fileList" class="file-list">
+                <!-- Files will be dynamically inserted here -->
+            </ul>
+            <div id="listStatus" class="status info">Loading files...</div>
+        </div>
     </div>
 
     <script>
@@ -60,6 +391,21 @@
         const fileList = document.getElementById('fileList');
         const listStatus = document.getElementById('listStatus');
         const uploadBtn = document.getElementById('uploadBtn');
+        const fileLabel = document.getElementById('fileLabel');
+        const dropZone = document.getElementById('dropZone');
+
+        // Update label when file selected
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileLabel.textContent = e.target.files[0].name;
+                dropZone.style.borderColor = 'var(--secondary)';
+                dropZone.style.background = '#F0FDF4';
+            } else {
+                fileLabel.textContent = 'Click to browse or drag file here';
+                dropZone.style.borderColor = 'var(--primary)';
+                dropZone.style.background = '#EEF2FF';
+            }
+        });
 
         // Handle File Upload
         uploadForm.addEventListener('submit', async (e) => {
@@ -128,18 +474,32 @@
                 files.forEach(file => {
                     const sizeBytes = file.length || 0;
                     const sizeKB = (sizeBytes / 1024).toFixed(2);
-                    const date = new Date(file.uploadDate).toLocaleString();
+                    const date = new Date(file.uploadDate).toLocaleDateString(undefined, {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
 
                     const li = document.createElement('li');
                     li.className = 'file-item';
                     li.innerHTML = `
                         <div class="file-info">
-                            <span class="file-name">${file.filename}</span>
-                            <span class="file-meta">${sizeKB} KB • Uploaded: ${date}</span>
+                            <div class="file-icon">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <div class="file-details">
+                                <div class="file-name" title="${file.filename}">${file.filename}</div>
+                                <div class="file-meta">
+                                    <span>${sizeKB} KB</span>
+                                    <span class="dot"></span>
+                                    <span>${date}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <a href="${API_URL}/${file._id}" target="_blank" class="download-link">Download / View</a>
-                            <button class="delete-btn" onclick="deleteFile('${file._id}')">Delete</button>
+                        <div class="file-actions">
+                            <a href="${API_URL}/${file._id}" target="_blank" class="action-link">Open</a>
+                            <button class="action-link action-delete" onclick="deleteFile('${file._id}')" title="Delete File">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </div>
                     `;
                     fileList.appendChild(li);
