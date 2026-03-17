@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { GridFSBucket } = require('mongodb');
 
-let gfsBucket;
-
 const getBucket = () => {
     if (gfsBucket) return gfsBucket;
     if (mongoose.connection.readyState === 1 && mongoose.connection.db) {

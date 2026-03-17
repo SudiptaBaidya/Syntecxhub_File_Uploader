@@ -6,9 +6,19 @@ const cors = require('cors');
 
 dotenv.config();
 
-connectDB();
-
 const app = express();
+
+// Cold-start database initialization middleware for Vercel
+app.use(async (req, res, next) => {
+    try {
+        if (mongoose.connection.readyState !== 1) {
+            await connectDB();
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 app.use(cors());
 app.use(express.json());
