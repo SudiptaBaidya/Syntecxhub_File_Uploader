@@ -18,10 +18,35 @@ const uploadFile = (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
-    res.status(201).json({
-        message: 'File uploaded successfully',
-        file: req.file
-    });
+    
+    try {
+        const bucket = getBucket();
+        if (!bucket) return res.status(500).json({ error: 'Database not initialized' });
+
+        const filename = `${Date.now()}-${req.file.originalname}`;
+        const uploadStream = bucket.openUploadStream(filename, {
+            contentType: req.file.mimetype
+        });
+
+        uploadStream.end(req.file.buffer);
+
+        uploadStream.on('finish', () => {
+             res.status(201).json({
+                 message: 'File uploaded successfully',
+                 file: {
+                     filename: filename,
+                     id: uploadStream.id,
+                     size: req.file.size
+                 }
+             });
+        });
+
+        uploadStream.on('error', (error) => {
+             res.status(500).json({ error: error.message });
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 const getFiles = async (req, res) => {
