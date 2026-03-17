@@ -14,6 +14,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'File Uploader API is running. Access /api/files to use endpoints.' });
+});
+
 app.use('/api/files', fileRoutes);
 
 app.use((err, req, res, next) => {
