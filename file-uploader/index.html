@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EaseDocs | File Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>EaseDocs | Premium Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
+            --bg-base: #0A0A0B;
+            --bg-surface: rgba(22, 22, 26, 0.6);
+            --bg-card: rgba(30, 31, 38, 0.7);
+            --primary: #6366F1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
             --secondary: #10B981;
-            --secondary-hover: #059669;
+            --secondary-glow: rgba(16, 185, 129, 0.3);
             --danger: #EF4444;
-            --danger-hover: #DC2626;
-            --bg-color: #F3F4F6;
-            --surface: #FFFFFF;
-            --text-main: #111827;
-            --text-light: #6B7280;
-            --border: #E5E7EB;
+            --text-main: #FFFFFF;
+            --text-muted: #9CA3AF;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(255, 255, 255, 0.15);
         }
 
         * {
@@ -26,261 +27,345 @@
             padding: 0;
         }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-base);
+            /* Dynamic animated background */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 40%);
+            background-attachment: fixed;
             color: var(--text-main);
             min-height: 100vh;
             padding: 2rem 1rem;
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
-        .container {
+        .dashboard {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             display: grid;
             gap: 2rem;
             grid-template-columns: 1fr;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @media (min-width: 768px) {
-            .container {
-                grid-template-columns: 350px 1fr;
+        @media (min-width: 860px) {
+            .dashboard {
+                grid-template-columns: 380px 1fr;
                 align-items: start;
             }
         }
 
-        .header {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-bottom: 1rem;
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
         }
 
-        .header h1 {
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            opacity: 0.5;
+        }
+
+        .glass-panel:hover {
+            border-color: var(--border-highlight);
+        }
+
+        /* Branding */
+        .brand {
+            margin-bottom: 2.5rem;
+        }
+
+        .brand h1 {
             font-weight: 700;
-            font-size: 2.5rem;
-            background: linear-gradient(to right, #4F46E5, #8B5CF6);
+            font-size: 2.8rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #FFFFFF 0%, #A5B4FC 100%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .header p {
-            color: var(--text-light);
+        .brand h1 svg {
+            color: var(--primary);
+        }
+
+        .brand p {
+            color: var(--text-muted);
+            font-weight: 300;
             font-size: 1.1rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border: 1px solid rgba(255,255,255,0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         h2 {
             font-size: 1.25rem;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #1F2937;
+            gap: 0.75rem;
+            color: #E5E7EB;
         }
 
-        /* Upload Area Styling */
-        .upload-area {
-            border: 2px dashed var(--primary);
-            border-radius: 12px;
-            padding: 2rem;
+        h2 svg { color: var(--text-muted); }
+
+        /* Advanced Upload Area */
+        .upload-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 3rem 2rem;
             text-align: center;
-            background: #EEF2FF;
-            transition: all 0.3s ease;
+            background: rgba(99, 102, 241, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             cursor: pointer;
             margin-bottom: 1.5rem;
+            overflow: hidden;
         }
 
-        .upload-area:hover {
-            background: #E0E7FF;
-            border-color: var(--primary-hover);
-        }
-
-        .upload-area input[type="file"] {
+        .upload-zone::after {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--primary-glow) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .upload-zone:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px var(--primary-glow);
+        }
+
+        .upload-zone:hover::after { opacity: 0.2; }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
             cursor: pointer;
+            z-index: 10;
+        }
+
+        .upload-content {
+            position: relative;
+            z-index: 2;
         }
 
         .upload-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon {
+            transform: scale(1.1);
+            background: rgba(99, 102, 241, 0.2);
         }
 
         .upload-text {
-            color: var(--primary);
+            color: #E5E7EB;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
         }
 
         .upload-hint {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
         }
 
         /* Buttons */
         .btn {
             width: 100%;
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.5rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            font-family: inherit;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             justify-content: center;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+            box-shadow: 0 4px 15px -3px var(--primary-glow);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .btn-primary:hover {
             background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 8px rgba(79, 70, 229, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px var(--primary-glow);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        .btn-primary:hover::before { left: 100%; }
+
+        .btn-primary:active { transform: translateY(0); }
 
         .btn-primary:disabled {
-            background: #9CA3AF;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-muted);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        .btn-icon {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            padding: 0.5rem 1rem;
+            width: auto;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
         }
 
         .header-action {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .header-action h2 { margin-bottom: 0; }
 
-        .btn-sm {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.875rem;
-            width: auto;
-            border-radius: 6px;
-        }
-
-        .btn-secondary {
-            background: #E5E7EB;
-            color: #374151;
-        }
-
-        .btn-secondary:hover {
-            background: #D1D5DB;
-        }
-
-        /* File List */
+        /* File List - Premium Layout */
         .file-list {
             list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
         }
 
         .file-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            padding: 1.25rem;
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        @media (min-width: 640px) {
-            .file-item {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0;
-            }
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.4s ease forwards;
         }
 
         .file-item:hover {
-            border-color: #D1D5DB;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transform: scale(1.01);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+            box-shadow: -5px 5px 20px -5px rgba(0,0,0,0.3);
         }
 
         .file-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.25rem;
             overflow: hidden;
+            flex: 1;
         }
 
-        .file-icon {
-            background: #F3F4F6;
-            padding: 0.75rem;
-            border-radius: 8px;
-            color: var(--text-light);
+        .file-ext-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #A5B4FC;
             flex-shrink: 0;
         }
 
         .file-details {
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
 
         .file-name {
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 0.25rem;
+            font-weight: 500;
+            color: #F3F4F6;
+            font-size: 1.05rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .file-meta {
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: 0.85rem;
+            color: var(--text-muted);
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            font-weight: 300;
         }
 
         .file-meta span.dot {
-            width: 3px;
-            height: 3px;
-            background: #D1D5DB;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
             border-radius: 50%;
             display: inline-block;
         }
@@ -288,95 +373,150 @@
         .file-actions {
             display: flex;
             gap: 0.5rem;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
         }
+
+        .file-item:hover .file-actions { opacity: 1; }
 
         .action-link {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 500;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
-            transition: background 0.2s ease;
-            background: #F3F4F6;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            border: 1px solid transparent;
+        }
+
+        .action-link:hover {
             color: var(--primary);
-            text-align: center;
-            flex: 1;
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: scale(1.05);
         }
-
-        @media (min-width: 640px) {
-            .action-link { flex: none; }
-        }
-
-        .action-link:hover { background: #E5E7EB; }
 
         .action-delete {
-            background: #FEF2F2;
             color: var(--danger);
         }
 
-        .action-delete:hover { background: #FEE2E2; }
-
-        /* Status Messages */
-        .status {
-            margin-top: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: none;
-            animation: fadeIn 0.3s ease;
+        .action-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
         }
 
-        .status.success { background: #DCFCE7; color: #166534; border-left: 4px solid #16A34A; }
-        .status.error { background: #FEE2E2; color: #991B1B; border-left: 4px solid #DC2626; }
-        .status.info { color: var(--text-light); text-align: center; display: block; padding: 2rem 0; font-style: italic; }
+        /* Status & Feedback */
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: none;
+            animation: slideUp 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .status.success { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: #34D399; 
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 20px -5px var(--secondary-glow);
+        }
+        
+        .status.error { 
+            background: rgba(239, 68, 68, 0.1); 
+            color: #FCA5A5; 
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px dashed var(--border-light);
+        }
+
+        .empty-state svg {
+            color: rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+            width: 64px;
+            height: 64px;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>EaseDocs</h1>
-            <p>Secure, rapid file sharing & storage</p>
-        </div>
+    <div class="dashboard">
+        
+        <!-- Sidebar / Upload Area -->
+        <div class="glass-panel" style="display: flex; flex-direction: column;">
+            <div class="brand">
+                <h1>
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    EaseDocs
+                </h1>
+                <p>Enterprise Grade Vault</p>
+            </div>
 
-        <!-- Upload Section -->
-        <div class="card">
-            <h2>
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Upload File
-            </h2>
-            <form id="uploadForm">
-                <div class="upload-area" id="dropZone">
+            <form id="uploadForm" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="upload-zone" id="dropZone">
                     <input type="file" id="fileInput" name="file" required>
-                    <div class="upload-icon">📄</div>
-                    <div class="upload-text" id="fileLabel">Click to browse or drag file here</div>
-                    <div class="upload-hint">Supports all file types up to Vercel limits</div>
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                        <div class="upload-text" id="fileLabel">Drop file to encrypt</div>
+                        <div class="upload-hint">Up to Vercel memory limits</div>
+                    </div>
                 </div>
-                <button type="submit" id="uploadBtn" class="btn btn-primary">
-                    Upload to Cloud
+                <button type="submit" id="uploadBtn" class="btn btn-primary" style="margin-top: auto;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Secure Upload
                 </button>
             </form>
             <div id="uploadStatus" class="status"></div>
         </div>
 
-        <!-- Files Section -->
-        <div class="card" style="grid-column: 1 / -1;">
+        <!-- Main Content Area / File List -->
+        <div class="glass-panel">
             <div class="header-action">
                 <h2>
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    Cloud Storage
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                    Database Storage
                 </h2>
-                <button onclick="fetchFiles()" class="btn btn-secondary btn-sm">↻ Refresh</button>
+                <button onclick="fetchFiles()" class="btn btn-icon">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 0.25rem; vertical-align: top;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Sync
+                </button>
             </div>
-            <ul id="fileList" class="file-list">
-                <!-- Files will be dynamically inserted here -->
-            </ul>
-            <div id="listStatus" class="status info">Loading files...</div>
+            
+            <div id="fileListContainer">
+                <ul id="fileList" class="file-list">
+                    <!-- Files injected dynamically -->
+                </ul>
+                <div id="listStatus" class="empty-state">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"></path></svg>
+                    <p>Connecting to secure storage...</p>
+                </div>
+            </div>
         </div>
     </div>
 
