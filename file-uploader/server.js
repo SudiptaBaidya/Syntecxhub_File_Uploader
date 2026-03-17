@@ -13,9 +13,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const path = require('path');
 
 app.get('/', (req, res) => {
-    res.status(200).json({ message: 'File Uploader API is running. Access /api/files to use endpoints.' });
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.use('/api/files', fileRoutes);
